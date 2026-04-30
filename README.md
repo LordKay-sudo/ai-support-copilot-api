@@ -42,7 +42,7 @@ High-level flow:
 
 ## API design (draft)
 
-### `POST /api/copilot/answer` (implemented with placeholder service)
+### `POST /api/copilot/answer` (implemented)
 
 Request body:
 
@@ -200,6 +200,8 @@ Milestone 1 and Milestone 2 baseline are in place:
 - `GET /api/health` endpoint implemented
 - actuator and test dependencies configured
 - `POST /api/copilot/answer` endpoint with request validation and typed response DTOs
+- retrieval abstraction and in-memory retrieval implementation added
+- Spring AI chat integration wired with environment-based API key config
 
 ## License
 
