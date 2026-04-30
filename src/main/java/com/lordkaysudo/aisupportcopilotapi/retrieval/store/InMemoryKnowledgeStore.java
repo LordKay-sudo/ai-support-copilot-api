@@ -1,12 +1,18 @@
 package com.lordkaysudo.aisupportcopilotapi.retrieval.store;
 
 import com.lordkaysudo.aisupportcopilotapi.retrieval.model.RetrievedDocument;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
+@ConditionalOnProperty(
+        name = "copilot.retrieval.store-type",
+        havingValue = "in-memory",
+        matchIfMissing = true
+)
 public class InMemoryKnowledgeStore implements KnowledgeStore {
 
     private final ConcurrentHashMap<String, RetrievedDocument> docsById = new ConcurrentHashMap<>();

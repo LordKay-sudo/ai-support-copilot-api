@@ -93,6 +93,28 @@ Request body:
 }
 ```
 
+## Retrieval store options
+
+The project supports interchangeable retrieval stores behind the `KnowledgeStore` abstraction:
+
+- `in-memory` (default): fast local development
+- `pgvector`: PostgreSQL-backed store (skeleton implementation)
+
+Switch store type in `application.properties`:
+
+```properties
+copilot.retrieval.store-type=in-memory
+```
+
+For pgvector mode, set:
+
+```properties
+copilot.retrieval.store-type=pgvector
+spring.datasource.url=jdbc:postgresql://localhost:5432/copilot
+spring.datasource.username=postgres
+spring.datasource.password=postgres
+```
+
 ### `GET /api/health`
 
 Basic liveness/readiness check for runtime health.
@@ -214,6 +236,7 @@ Milestone 1 and Milestone 2 baseline are in place:
 - retrieval abstraction and in-memory retrieval implementation added
 - Spring AI chat integration wired with environment-based API key config
 - `POST /api/knowledge/ingest` endpoint implemented for retrieval store upserts
+- pgvector-ready `KnowledgeStore` skeleton added behind config-based store switching
 
 ## License
 
