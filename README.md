@@ -150,14 +150,35 @@ ai-support-copilot-api/
   README.md
 ```
 
-## Local setup (planned)
+## Local setup
 
-Detailed setup instructions will be added as Milestone 1 is completed. Planned local workflow:
+### Prerequisites
 
-1. Configure environment variables in `.env`
-2. Start dependencies with docker-compose
-3. Run service with Maven or Gradle
-4. Test endpoints via Swagger UI or HTTP client
+- Java 21
+- Maven 3.9+
+
+### Run locally
+
+```bash
+mvn spring-boot:run
+```
+
+Service starts on `http://localhost:8080`.
+
+### Verify baseline endpoints
+
+```bash
+curl http://localhost:8080/api/health
+curl http://localhost:8080/actuator/health
+```
+
+Expected `api/health` response:
+
+```json
+{
+  "status": "UP"
+}
+```
 
 ## Contribution guidelines
 
@@ -168,7 +189,16 @@ This project is currently in active setup. Early contributions should prioritize
 - retrieval quality and citation correctness
 - observability and operational readiness
 
+## Current status
+
+Milestone 1 bootstrap is in place:
+
+- Spring Boot project initialized with Maven
+- baseline package structure added
+- `GET /api/health` endpoint implemented
+- actuator and test dependencies configured
+
 ## License
 
-MIT (to be added in the next commit).
+MIT (to be added).
 

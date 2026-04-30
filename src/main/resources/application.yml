@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: ai-support-copilot-api
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+
+server:
+  port: 8080
