@@ -78,9 +78,20 @@ Response body:
 }
 ```
 
-### `POST /api/knowledge/ingest` (planned)
+### `POST /api/knowledge/ingest` (implemented)
 
-Ingests documents into the retrieval index for future grounded responses.
+Upserts documents into the retrieval store for future grounded responses.
+
+Request body:
+
+```json
+{
+  "id": "kb-999",
+  "title": "Tenant Reset Workflow",
+  "content": "Reset tenant credentials after ownership verification.",
+  "confidenceScore": 88
+}
+```
 
 ### `GET /api/health`
 
@@ -202,6 +213,7 @@ Milestone 1 and Milestone 2 baseline are in place:
 - `POST /api/copilot/answer` endpoint with request validation and typed response DTOs
 - retrieval abstraction and in-memory retrieval implementation added
 - Spring AI chat integration wired with environment-based API key config
+- `POST /api/knowledge/ingest` endpoint implemented for retrieval store upserts
 
 ## License
 
