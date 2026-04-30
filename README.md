@@ -1,0 +1,174 @@
+# AI Support Copilot API
+
+AI-powered support copilot API built with Spring Boot and Spring AI, designed for grounded answers through retrieval-augmented generation (RAG), structured response contracts, and production-ready observability.
+
+## Why this project
+
+Support teams need fast and reliable answers, but generic AI chat often misses product context and creates compliance risk. This project focuses on:
+
+- Grounded responses using internal knowledge retrieval
+- Strict API response structures for downstream automation
+- Guardrails for safer production usage
+- Clear observability for latency, quality, and cost signals
+
+## MVP scope (v1)
+
+Version 1 delivers a backend API that:
+
+- Accepts support questions with business context
+- Retrieves relevant knowledge snippets from a vector store
+- Generates a grounded answer with Spring AI
+- Returns typed JSON with confidence and citations
+- Exposes health and metrics endpoints for operations
+
+## Planned architecture
+
+Core components:
+
+- **API Layer (Spring Boot):** request validation, auth hooks, response shaping
+- **Copilot Service:** prompt orchestration, retrieval enrichment, output parsing
+- **Retrieval Layer:** vector search over indexed support content
+- **LLM Adapter (Spring AI):** model invocation and structured output mapping
+- **Observability:** metrics, tracing, logs, and quality diagnostics
+
+High-level flow:
+
+1. Client calls `POST /api/copilot/answer`
+2. API validates request and enriches runtime context
+3. Retriever fetches top-k relevant documents
+4. Prompt is composed with policy + retrieved context
+5. Spring AI invokes model and maps to typed response
+6. API returns answer, confidence, sources, and suggested actions
+
+## API design (draft)
+
+### `POST /api/copilot/answer`
+
+Request body:
+
+```json
+{
+  "ticketId": "TCK-10021",
+  "question": "Customer cannot reset their password after MFA enrollment.",
+  "customerTier": "enterprise",
+  "product": "identity-service",
+  "language": "en"
+}
+```
+
+Response body:
+
+```json
+{
+  "answer": "Use the MFA recovery workflow and verify backup factors before password reset.",
+  "confidence": 0.84,
+  "sources": [
+    {
+      "id": "kb-241",
+      "title": "MFA Recovery Procedure",
+      "score": 0.91
+    }
+  ],
+  "suggestedActions": [
+    "Verify customer identity using enterprise policy",
+    "Trigger backup-factor recovery flow",
+    "Reset password after MFA recovery succeeds"
+  ],
+  "escalationRequired": false
+}
+```
+
+### `POST /api/knowledge/ingest` (planned)
+
+Ingests documents into the retrieval index for future grounded responses.
+
+### `GET /api/health`
+
+Basic liveness/readiness check for runtime health.
+
+### `GET /api/metrics`
+
+Metrics endpoint for platform monitoring.
+
+## Tech stack (planned)
+
+- Java 21
+- Spring Boot 3.x
+- Spring AI
+- Vector store: PostgreSQL + pgvector (initial option)
+- OpenAPI / Swagger
+- Micrometer + OpenTelemetry
+- Docker + docker-compose
+- GitHub Actions CI
+
+## Non-functional goals
+
+- P95 response latency under 2.5s for common support questions
+- Consistent typed output for integration with ticketing workflows
+- Traceable citations in every grounded response path
+- Safe fallback behavior when retrieval quality is low
+
+## Development roadmap
+
+### Milestone 1: Bootstrap
+
+- Initialize Spring Boot project
+- Add baseline package structure
+- Add `/api/health`
+- Add build, lint, and test setup
+
+### Milestone 2: Core copilot endpoint
+
+- Implement `POST /api/copilot/answer`
+- Add request/response DTOs
+- Add prompt templates and output parser
+
+### Milestone 3: Retrieval
+
+- Add document ingestion pipeline
+- Add vector search and top-k retrieval
+- Attach citations to output payload
+
+### Milestone 4: Hardening
+
+- Add guardrails and policy checks
+- Add traces, metrics, structured logs
+- Add integration tests and CI gate
+
+## Project structure (target)
+
+```text
+ai-support-copilot-api/
+  src/main/java/.../api
+  src/main/java/.../copilot
+  src/main/java/.../retrieval
+  src/main/java/.../model
+  src/main/java/.../config
+  src/test/java/.../
+  docs/
+  docker/
+  README.md
+```
+
+## Local setup (planned)
+
+Detailed setup instructions will be added as Milestone 1 is completed. Planned local workflow:
+
+1. Configure environment variables in `.env`
+2. Start dependencies with docker-compose
+3. Run service with Maven or Gradle
+4. Test endpoints via Swagger UI or HTTP client
+
+## Contribution guidelines
+
+This project is currently in active setup. Early contributions should prioritize:
+
+- API contracts and validation quality
+- test coverage for response correctness
+- retrieval quality and citation correctness
+- observability and operational readiness
+
+## License
+
+MIT (to be added in the next commit).
+
