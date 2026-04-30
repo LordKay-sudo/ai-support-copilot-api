@@ -115,6 +115,12 @@ spring.datasource.username=postgres
 spring.datasource.password=postgres
 ```
 
+Or run with the `pgvector` profile:
+
+```bash
+mvn spring-boot:run -Dspring-boot.run.profiles=pgvector
+```
+
 ### `GET /api/health`
 
 Basic liveness/readiness check for runtime health.
@@ -198,6 +204,20 @@ Application configuration lives in `src/main/resources/application.properties`.
 mvn spring-boot:run
 ```
 
+### Run with pgvector locally
+
+Start PostgreSQL with pgvector enabled:
+
+```bash
+docker compose up -d
+```
+
+Then run the app with the pgvector profile:
+
+```bash
+mvn spring-boot:run -Dspring-boot.run.profiles=pgvector
+```
+
 Service starts on `http://localhost:8080`.
 
 ### Verify baseline endpoints
@@ -226,7 +246,7 @@ This project is currently in active setup. Early contributions should prioritize
 
 ## Current status
 
-Milestone 1 and Milestone 2 baseline are in place:
+Milestones 1-3 baseline are in place:
 
 - Spring Boot project initialized with Maven
 - baseline package structure added
