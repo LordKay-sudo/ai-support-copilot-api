@@ -159,6 +159,8 @@ ai-support-copilot-api/
 
 ### Run locally
 
+Application configuration lives in `src/main/resources/application.properties`.
+
 ```bash
 mvn spring-boot:run
 ```
