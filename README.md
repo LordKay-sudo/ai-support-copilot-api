@@ -42,7 +42,7 @@ High-level flow:
 
 ## API design (draft)
 
-### `POST /api/copilot/answer`
+### `POST /api/copilot/answer` (implemented with placeholder service)
 
 Request body:
 
@@ -193,12 +193,13 @@ This project is currently in active setup. Early contributions should prioritize
 
 ## Current status
 
-Milestone 1 bootstrap is in place:
+Milestone 1 and Milestone 2 baseline are in place:
 
 - Spring Boot project initialized with Maven
 - baseline package structure added
 - `GET /api/health` endpoint implemented
 - actuator and test dependencies configured
+- `POST /api/copilot/answer` endpoint with request validation and typed response DTOs
 
 ## License
 
