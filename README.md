@@ -129,6 +129,11 @@ Basic liveness/readiness check for runtime health.
 
 Metrics endpoint for platform monitoring.
 
+### API docs
+
+- OpenAPI JSON: `GET /api-docs`
+- Swagger UI: `GET /swagger-ui.html`
+
 ## Tech stack (planned)
 
 - Java 21
@@ -257,6 +262,9 @@ Milestones 1-3 baseline are in place:
 - Spring AI chat integration wired with environment-based API key config
 - `POST /api/knowledge/ingest` endpoint implemented for retrieval store upserts
 - pgvector-ready `KnowledgeStore` skeleton added behind config-based store switching
+- OpenAPI/Swagger enabled for interactive API exploration
+- request correlation IDs added (`X-Request-Id`) with unified error payloads
+- GitHub Actions CI workflow added (`mvn clean verify`)
 
 ## License
 
