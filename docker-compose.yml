@@ -1,4 +1,14 @@
 services:
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.107.0
+    container_name: copilot-otel-collector
+    command: ["--config=/etc/otelcol/config.yaml"]
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+    volumes:
+      - ./docker/otel-collector.yaml:/etc/otelcol/config.yaml:ro
+
   pgvector:
     image: pgvector/pgvector:pg16
     container_name: copilot-pgvector

@@ -17,7 +17,7 @@ public class CopilotService {
 
     private final KnowledgeRetrievalService retrievalService;
     private final CopilotProperties copilotProperties;
-    private final ChatClient chatClient;
+    private final ObjectProvider<ChatClient.Builder> chatClientBuilderProvider;
 
     public CopilotService(
             KnowledgeRetrievalService retrievalService,
@@ -26,8 +26,7 @@ public class CopilotService {
     ) {
         this.retrievalService = retrievalService;
         this.copilotProperties = copilotProperties;
-        ChatClient.Builder builder = chatClientBuilderProvider.getIfAvailable();
-        this.chatClient = builder == null ? null : builder.build();
+        this.chatClientBuilderProvider = chatClientBuilderProvider;
     }
 
     public CopilotAnswerResponse answer(CopilotAnswerRequest request) {
@@ -57,7 +56,8 @@ public class CopilotService {
     }
 
     private String generateAnswer(CopilotAnswerRequest request, List<RetrievedDocument> docs) {
-        if (chatClient == null || docs.isEmpty()) {
+        ChatClient.Builder builder = chatClientBuilderProvider.getIfAvailable();
+        if (builder == null || docs.isEmpty()) {
             return "Use the documented recovery workflow for " + request.product()
                     + " and validate identity before performing account changes.";
         }
@@ -86,6 +86,7 @@ public class CopilotService {
                 context
         );
 
+        ChatClient chatClient = builder.build();
         return chatClient.prompt()
                 .user(prompt)
                 .call()

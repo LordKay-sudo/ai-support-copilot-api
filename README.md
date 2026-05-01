@@ -141,7 +141,7 @@ Metrics endpoint for platform monitoring.
 - Spring AI
 - Vector store: PostgreSQL + pgvector (initial option)
 - OpenAPI / Swagger
-- Micrometer + OpenTelemetry
+- Micrometer tracing + OTLP export (OpenTelemetry)
 - Docker + docker-compose
 - GitHub Actions CI
 
@@ -225,6 +225,30 @@ mvn spring-boot:run -Dspring-boot.run.profiles=pgvector
 
 Service starts on `http://localhost:8080`.
 
+### Run with OpenTelemetry OTLP export locally
+
+Start the local OpenTelemetry Collector (and optional Postgres) with:
+
+```bash
+docker compose up -d
+```
+
+Run the app with the `otel` profile:
+
+```bash
+mvn spring-boot:run -Dspring-boot.run.profiles=otel
+```
+
+Traces and metrics are exported to the collector using OTLP HTTP on port `4318`.
+
+### JSON structured logs (optional)
+
+Enable JSON logs by activating the `json-logging` profile:
+
+```bash
+mvn spring-boot:run -Dspring-boot.run.profiles=json-logging
+```
+
 ### Verify baseline endpoints
 
 ```bash
@@ -265,6 +289,8 @@ Milestones 1-3 baseline are in place:
 - OpenAPI/Swagger enabled for interactive API exploration
 - request correlation IDs added (`X-Request-Id`) with unified error payloads
 - GitHub Actions CI workflow added (`mvn clean verify`)
+- optional OTLP tracing/metrics export profile (`otel`) + local collector in `docker-compose.yml`
+- optional JSON logging profile (`json-logging`) via `logback-spring.xml`
 
 ## License
 
