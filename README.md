@@ -56,6 +56,10 @@ Request body:
 }
 ```
 
+Guardrail behavior:
+- Basic PII masking is applied to model/fallback answers (email, phone, and card-like numbers).
+- Responses with masked sensitive content are flagged for escalation.
+
 Response body:
 
 ```json
@@ -275,7 +279,7 @@ This project is currently in active setup. Early contributions should prioritize
 
 ## Current status
 
-Milestones 1-3 baseline are in place:
+Milestones 1-4 baseline are in place:
 
 - Spring Boot project initialized with Maven
 - baseline package structure added
@@ -291,6 +295,7 @@ Milestones 1-3 baseline are in place:
 - GitHub Actions CI workflow added (`mvn clean verify`)
 - optional OTLP tracing/metrics export profile (`otel`) + local collector in `docker-compose.yml`
 - optional JSON logging profile (`json-logging`) via `logback-spring.xml`
+- basic PII guardrails added with redaction + escalation signaling in copilot responses
 
 ## License
 

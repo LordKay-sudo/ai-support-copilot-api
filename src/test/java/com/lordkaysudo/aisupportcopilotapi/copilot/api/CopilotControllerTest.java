@@ -65,4 +65,26 @@ class CopilotControllerTest {
                 .andExpect(jsonPath("$.errors").isArray())
                 .andExpect(jsonPath("$.requestId").isNotEmpty());
     }
+
+    @Test
+    void shouldRedactSensitiveDataAndEscalate() throws Exception {
+        String requestBody = """
+                {
+                  "ticketId": "TCK-PII-1",
+                  "question": "Customer email john.doe@example.com phone 555-123-4567 card 4111 1111 1111 1111 cannot access account",
+                  "customerTier": "standard",
+                  "product": "unknown-product",
+                  "language": "en"
+                }
+                """;
+
+        mockMvc.perform(post("/api/copilot/answer")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.answer").value(org.hamcrest.Matchers.containsString("[REDACTED_EMAIL]")))
+                .andExpect(jsonPath("$.answer").value(org.hamcrest.Matchers.containsString("[REDACTED_PHONE]")))
+                .andExpect(jsonPath("$.answer").value(org.hamcrest.Matchers.containsString("[REDACTED_CARD]")))
+                .andExpect(jsonPath("$.escalationRequired").value(true));
+    }
 }
