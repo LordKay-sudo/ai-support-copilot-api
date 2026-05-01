@@ -102,7 +102,7 @@ Request body:
 The project supports interchangeable retrieval stores behind the `KnowledgeStore` abstraction:
 
 - `in-memory` (default): fast local development
-- `pgvector`: PostgreSQL-backed store (skeleton implementation)
+- `pgvector`: PostgreSQL-backed store with vector embeddings and cosine similarity search
 
 Switch store type in `application.properties`:
 
@@ -117,6 +117,7 @@ copilot.retrieval.store-type=pgvector
 spring.datasource.url=jdbc:postgresql://localhost:5432/copilot
 spring.datasource.username=postgres
 spring.datasource.password=postgres
+copilot.retrieval.embedding-dimensions=1536
 ```
 
 Or run with the `pgvector` profile:
@@ -289,7 +290,7 @@ Milestones 1-4 baseline are in place:
 - retrieval abstraction and in-memory retrieval implementation added
 - Spring AI chat integration wired with environment-based API key config
 - `POST /api/knowledge/ingest` endpoint implemented for retrieval store upserts
-- pgvector-ready `KnowledgeStore` skeleton added behind config-based store switching
+- pgvector `KnowledgeStore` uses vector embeddings + cosine similarity for retrieval
 - OpenAPI/Swagger enabled for interactive API exploration
 - request correlation IDs added (`X-Request-Id`) with unified error payloads
 - GitHub Actions CI workflow added (`mvn clean verify`)

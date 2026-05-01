@@ -5,6 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "copilot.retrieval")
 public record CopilotProperties(
         int topK,
-        double minScore
+        double minScore,
+        int embeddingDimensions
 ) {
 }

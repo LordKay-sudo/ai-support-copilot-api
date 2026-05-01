@@ -9,4 +9,6 @@ public interface KnowledgeStore {
     void upsert(RetrievedDocument document);
 
     List<RetrievedDocument> findAll();
+
+    List<RetrievedDocument> semanticSearch(String queryText, int topK, double minScore);
 }

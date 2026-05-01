@@ -5,7 +5,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
 
 @Component
 @ConditionalOnProperty(
@@ -46,5 +48,35 @@ public class InMemoryKnowledgeStore implements KnowledgeStore {
     @Override
     public List<RetrievedDocument> findAll() {
         return docsById.values().stream().toList();
+    }
+
+    @Override
+    public List<RetrievedDocument> semanticSearch(String queryText, int topK, double minScore) {
+        String query = queryText == null ? "" : queryText.toLowerCase(Locale.ROOT);
+
+        return docsById.values().stream()
+                .map(doc -> new RetrievedDocument(
+                        doc.id(),
+                        doc.title(),
+                        doc.content(),
+                        lexicalScore(query, doc)
+                ))
+                .filter(doc -> doc.score() >= minScore)
+                .sorted((a, b) -> Double.compare(b.score(), a.score()))
+                .limit(topK)
+                .toList();
+    }
+
+    private double lexicalScore(String queryText, RetrievedDocument doc) {
+        String title = doc.title().toLowerCase(Locale.ROOT);
+        String content = doc.content().toLowerCase(Locale.ROOT);
+        long matches = Stream.of("mfa", "password", "reset", "recovery", "escalate", "identity")
+                .filter(keyword -> queryText.contains(keyword) && (title.contains(keyword) || content.contains(keyword)))
+                .count();
+
+        if (matches == 0) {
+            return 0.0;
+        }
+        return Math.min(1.0, 0.4 + (matches * 0.15));
     }
 }

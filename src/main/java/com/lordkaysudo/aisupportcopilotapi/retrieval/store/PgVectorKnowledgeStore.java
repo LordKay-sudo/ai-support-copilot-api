@@ -1,5 +1,6 @@
 package com.lordkaysudo.aisupportcopilotapi.retrieval.store;
 
+import com.lordkaysudo.aisupportcopilotapi.retrieval.embedding.TextEmbeddingService;
 import com.lordkaysudo.aisupportcopilotapi.retrieval.model.RetrievedDocument;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
@@ -16,9 +17,14 @@ public class PgVectorKnowledgeStore implements KnowledgeStore {
 
     private static final Logger log = LoggerFactory.getLogger(PgVectorKnowledgeStore.class);
     private final JdbcTemplate jdbcTemplate;
+    private final TextEmbeddingService embeddingService;
 
-    public PgVectorKnowledgeStore(JdbcTemplate jdbcTemplate) {
+    public PgVectorKnowledgeStore(
+            JdbcTemplate jdbcTemplate,
+            TextEmbeddingService embeddingService
+    ) {
         this.jdbcTemplate = jdbcTemplate;
+        this.embeddingService = embeddingService;
     }
 
     @PostConstruct
@@ -35,25 +41,37 @@ public class PgVectorKnowledgeStore implements KnowledgeStore {
                     id TEXT PRIMARY KEY,
                     title TEXT NOT NULL,
                     content TEXT NOT NULL,
-                    score DOUBLE PRECISION NOT NULL
+                    score DOUBLE PRECISION NOT NULL,
+                    embedding vector(%d) NOT NULL
                 )
+                """.formatted(embeddingService.dimensions()));
+
+        jdbcTemplate.execute("""
+                CREATE INDEX IF NOT EXISTS idx_knowledge_documents_embedding
+                ON knowledge_documents
+                USING hnsw (embedding vector_cosine_ops)
                 """);
     }
 
     @Override
     public void upsert(RetrievedDocument document) {
+        String textToEmbed = document.title() + " " + document.content();
+        String vectorLiteral = toVectorLiteral(embeddingService.embed(textToEmbed));
+
         jdbcTemplate.update("""
-                INSERT INTO knowledge_documents (id, title, content, score)
-                VALUES (?, ?, ?, ?)
+                INSERT INTO knowledge_documents (id, title, content, score, embedding)
+                VALUES (?, ?, ?, ?, ?::vector)
                 ON CONFLICT (id)
                 DO UPDATE SET title = EXCLUDED.title,
                               content = EXCLUDED.content,
-                              score = EXCLUDED.score
+                              score = EXCLUDED.score,
+                              embedding = EXCLUDED.embedding
                 """,
                 document.id(),
                 document.title(),
                 document.content(),
-                document.score());
+                document.score(),
+                vectorLiteral);
     }
 
     @Override
@@ -68,5 +86,38 @@ public class PgVectorKnowledgeStore implements KnowledgeStore {
                         rs.getString("content"),
                         rs.getDouble("score")
                 ));
+    }
+
+    @Override
+    public List<RetrievedDocument> semanticSearch(String queryText, int topK, double minScore) {
+        String queryVector = toVectorLiteral(embeddingService.embed(queryText));
+
+        return jdbcTemplate.query("""
+                        SELECT id, title, content, (1 - (embedding <=> ?::vector)) AS similarity
+                        FROM knowledge_documents
+                        WHERE (1 - (embedding <=> ?::vector)) >= ?
+                        ORDER BY embedding <=> ?::vector
+                        LIMIT ?
+                        """,
+                (rs, rowNum) -> new RetrievedDocument(
+                        rs.getString("id"),
+                        rs.getString("title"),
+                        rs.getString("content"),
+                        rs.getDouble("similarity")
+                ),
+                queryVector, queryVector, minScore, queryVector, topK
+        );
+    }
+
+    private String toVectorLiteral(float[] vector) {
+        StringBuilder sb = new StringBuilder("[");
+        for (int i = 0; i < vector.length; i++) {
+            if (i > 0) {
+                sb.append(",");
+            }
+            sb.append(vector[i]);
+        }
+        sb.append("]");
+        return sb.toString();
     }
 }
