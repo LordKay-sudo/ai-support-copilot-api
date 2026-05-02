@@ -25,6 +25,12 @@ Version 1 delivers a backend API that:
 
 See [docs/ADR-001-retrieval-security-and-deployment.md](docs/ADR-001-retrieval-security-and-deployment.md) for retrieval modes, JWT security model, and deployment assumptions.
 
+## Local development
+
+- **IDE / agent context:** Open the **clone root of this repository** (`ai-support-copilot-api`, where `pom.xml` lives) in your editor. Other samples in your workspace will not contain this Java code unless you add them explicitly.
+- **Requirements:** JDK **21** and **Apache Maven** on your `PATH`.
+- **Build and tests (same as CI):** `mvn -B clean verify`
+
 ## Authentication
 
 Business APIs require a **Bearer JWT** (HS256). Set `COPILOT_JWT_SECRET` to a strong value in real environments; the default in `application.properties` is for local development only. The `prod` profile reads the signing key from `COPILOT_JWT_SECRET` and does not fall back to a default.
@@ -278,6 +284,16 @@ mvn spring-boot:run -Dspring-boot.run.profiles=pgvector
 
 Service starts on `http://localhost:8080`.
 
+### Run API and Postgres with Docker
+
+Build and start the API container plus pgvector:
+
+```bash
+docker compose up -d --build
+```
+
+The API listens on port `8080` with the `pgvector` profile and JDBC pointed at the compose database. Export `COPILOT_JWT_SECRET` (and optionally `OPENAI_API_KEY`) in your shell if you do not want the local default signing key.
+
 ### Run with OpenTelemetry OTLP export locally
 
 Start the local OpenTelemetry Collector (and optional Postgres) with:
@@ -345,6 +361,9 @@ Milestones 1-4 baseline are in place:
 - optional OTLP tracing/metrics export profile (`otel`) + local collector in `docker-compose.yml`
 - optional JSON logging profile (`json-logging`) via `logback-spring.xml`
 - basic PII guardrails added with redaction + escalation signaling in copilot responses
+- golden JSON fixtures plus parameterized tests for stable copilot regression checks
+- Resilience4j rate limits on copilot and ingest routes with JSON 429 responses
+- Docker image and compose service wiring the API to Postgres pgvector
 
 ## License
 
