@@ -3,6 +3,9 @@ target/
 .vscode/
 *.iml
 
+# Local editor metadata (do not commit)
+.cursor/
+
 # OS files
 .DS_Store
 Thumbs.db

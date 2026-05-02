@@ -27,7 +27,7 @@ See [docs/ADR-001-retrieval-security-and-deployment.md](docs/ADR-001-retrieval-s
 
 ## Local development
 
-- **IDE / agent context:** Open the **clone root of this repository** (`ai-support-copilot-api`, where `pom.xml` lives) in your editor. Other samples in your workspace will not contain this Java code unless you add them explicitly.
+- **IDE:** Open this repository’s root directory (where `pom.xml` lives) so search, refactor, and builds apply to this project.
 - **Requirements:** JDK **21** and **Apache Maven** on your `PATH`.
 - **Build and tests (same as CI):** `mvn -B clean verify`
 
