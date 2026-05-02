@@ -12,6 +12,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.List;
 
@@ -79,6 +80,20 @@ public class ApiExceptionHandler {
                         HttpStatus.TOO_MANY_REQUESTS.value(),
                         "Too many requests",
                         List.of("Rate limit exceeded. Retry after a short backoff."),
+                        requestId()
+                ));
+    }
+
+    /**
+     * Spring 6 routes unknown paths through the resource handler; unmapped API paths must be 404, not 500.
+     */
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleNoResource(NoResourceFoundException exception) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ApiErrorResponse(
+                        HttpStatus.NOT_FOUND.value(),
+                        "Not found",
+                        List.of("The requested resource was not found."),
                         requestId()
                 ));
     }
