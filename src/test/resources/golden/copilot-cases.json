@@ -21,5 +21,28 @@
       "product": "identity-service",
       "language": "en"
     }
+  },
+  {
+    "id": "validation-blank-product",
+    "expectHttpStatus": 400,
+    "request": {
+      "ticketId": "TCK-GOLD-2",
+      "question": "How do I rotate API keys?",
+      "customerTier": "standard",
+      "product": "",
+      "language": "en"
+    }
+  },
+  {
+    "id": "deterministic-when-no-retrieval-hits",
+    "expectHttpStatus": 200,
+    "request": {
+      "ticketId": "TCK-GOLD-3",
+      "question": "zzzz-no-kb-match-deterministic-fallback-phrase",
+      "customerTier": "standard",
+      "product": "identity-service",
+      "language": "en"
+    },
+    "answerMustContainAny": ["workflow", "recovery", "documented", "identity"]
   }
 ]

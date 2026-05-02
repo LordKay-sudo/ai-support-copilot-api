@@ -44,6 +44,19 @@ JWT claim **`roles`** (string array):
 
 `GET /api/health`, selected Actuator endpoints, and OpenAPI/Swagger URLs are anonymous. In Swagger UI use **Authorize** and send `Bearer <your-jwt>`.
 
+## Production checklist
+
+Activate **`prod`** (alone or combined, e.g. `prod,pgvector`). Set at least:
+
+| Variable | Purpose |
+|----------|---------|
+| `COPILOT_JWT_SECRET` | HS256 signing key (**required** in `prod`; no default). Use 32+ random bytes. |
+| `OPENAI_API_KEY` | Spring AI OpenAI calls (required for model-backed answers). |
+| `COPILOT_DB_URL`, `COPILOT_DB_USERNAME`, `COPILOT_DB_PASSWORD` | JDBC when `copilot.retrieval.store-type=pgvector` (see `application-pgvector.properties`). |
+| `copilot.retrieval.debug-search-enabled` | Keep **`false`** in production unless you intentionally expose `GET /api/retrieval/search` (see `application-prod.properties`). |
+
+Optional: enable the **`otel`** profile and configure OTLP endpoints (`application-otel.properties`) for traces/metrics. Tune Resilience4j limits in `application.properties` for your traffic.
+
 ## Planned architecture
 
 ```mermaid
@@ -258,7 +271,7 @@ ai-support-copilot-api/
 ### Prerequisites
 
 - Java 21
-- Maven 3.9+
+- This repository includes the **Maven Wrapper** (`./mvnw` / `mvnw.cmd`); a global Maven install is optional.
 
 ### Run locally
 
@@ -293,6 +306,16 @@ docker compose up -d --build
 ```
 
 The API listens on port `8080` with the `pgvector` profile and JDBC pointed at the compose database. Export `COPILOT_JWT_SECRET` (and optionally `OPENAI_API_KEY`) in your shell if you do not want the local default signing key.
+
+### Smoke test (compose)
+
+After `docker compose up -d --build` and the API is healthy:
+
+```bash
+curl -fsS http://localhost:8080/api/health
+```
+
+Open `http://localhost:8080/swagger-ui.html` in a browser (or `curl -I` that URL) to confirm the UI loads, then use **Authorize** with a JWT and try `POST /api/copilot/answer`.
 
 ### Run with OpenTelemetry OTLP export locally
 
