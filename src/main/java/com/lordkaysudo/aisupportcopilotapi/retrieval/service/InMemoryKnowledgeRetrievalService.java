@@ -19,6 +19,11 @@ public class InMemoryKnowledgeRetrievalService implements KnowledgeRetrievalServ
     @Override
     public List<RetrievedDocument> retrieve(CopilotAnswerRequest request, int topK, double minScore) {
         String query = request.product() + " " + request.question();
+        return retrieveByQuery(query, topK, minScore);
+    }
+
+    @Override
+    public List<RetrievedDocument> retrieveByQuery(String query, int topK, double minScore) {
         return knowledgeStore.semanticSearch(query, topK, minScore);
     }
 }

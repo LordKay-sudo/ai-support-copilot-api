@@ -8,4 +8,6 @@ import java.util.List;
 public interface KnowledgeRetrievalService {
 
     List<RetrievedDocument> retrieve(CopilotAnswerRequest request, int topK, double minScore);
+
+    List<RetrievedDocument> retrieveByQuery(String query, int topK, double minScore);
 }

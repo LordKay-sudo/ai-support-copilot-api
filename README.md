@@ -134,6 +134,16 @@ Basic liveness/readiness check for runtime health.
 
 Metrics endpoint for platform monitoring.
 
+### `GET /api/retrieval/search` (implemented)
+
+Debug endpoint to inspect retrieval relevance and scores for tuning.
+
+Example:
+
+```bash
+curl "http://localhost:8080/api/retrieval/search?query=mfa%20password%20reset&topK=3&minScore=0.3"
+```
+
 ### API docs
 
 - OpenAPI JSON: `GET /api-docs`

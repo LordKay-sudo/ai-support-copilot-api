@@ -7,11 +7,13 @@ import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.List;
+import jakarta.validation.ConstraintViolationException;
 
 @RestControllerAdvice
 public class ApiExceptionHandler {
@@ -37,6 +39,17 @@ public class ApiExceptionHandler {
                         HttpStatus.BAD_REQUEST.value(),
                         "Validation failed",
                         errors,
+                        requestId()
+                ));
+    }
+
+    @ExceptionHandler({ConstraintViolationException.class, MissingServletRequestParameterException.class})
+    public ResponseEntity<ApiErrorResponse> handleRequestValidationExceptions(Exception exception) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ApiErrorResponse(
+                        HttpStatus.BAD_REQUEST.value(),
+                        "Validation failed",
+                        List.of(exception.getMessage()),
                         requestId()
                 ));
     }
