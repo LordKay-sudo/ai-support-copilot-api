@@ -28,8 +28,8 @@ See [docs/ADR-001-retrieval-security-and-deployment.md](docs/ADR-001-retrieval-s
 ## Local development
 
 - **IDE:** Open this repository’s root directory (where `pom.xml` lives) so search, refactor, and builds apply to this project.
-- **Requirements:** JDK **21** and **Apache Maven** on your `PATH`.
-- **Build and tests (same as CI):** `mvn -B clean verify`
+- **Requirements:** JDK **21**. Maven is **not** required globally: the repo ships the **Maven Wrapper**.
+- **Build and tests (same as CI):** `./mvnw` (macOS/Linux) or `mvnw.cmd` (Windows), e.g. `.\mvnw.cmd -B clean verify`
 
 ## Authentication
 
@@ -163,7 +163,7 @@ copilot.retrieval.embedding-dimensions=1536
 Or run with the `pgvector` profile:
 
 ```bash
-mvn spring-boot:run -Dspring-boot.run.profiles=pgvector
+./mvnw spring-boot:run -Dspring-boot.run.profiles=pgvector
 ```
 
 ### `GET /api/health`
@@ -265,7 +265,7 @@ ai-support-copilot-api/
 Application configuration lives in `src/main/resources/application.properties`.
 
 ```bash
-mvn spring-boot:run
+./mvnw spring-boot:run
 ```
 
 ### Run with pgvector locally
@@ -279,7 +279,7 @@ docker compose up -d
 Then run the app with the pgvector profile:
 
 ```bash
-mvn spring-boot:run -Dspring-boot.run.profiles=pgvector
+./mvnw spring-boot:run -Dspring-boot.run.profiles=pgvector
 ```
 
 Service starts on `http://localhost:8080`.
@@ -305,7 +305,7 @@ docker compose up -d
 Run the app with the `otel` profile:
 
 ```bash
-mvn spring-boot:run -Dspring-boot.run.profiles=otel
+./mvnw spring-boot:run -Dspring-boot.run.profiles=otel
 ```
 
 Traces and metrics are exported to the collector using OTLP HTTP on port `4318`.
@@ -315,7 +315,7 @@ Traces and metrics are exported to the collector using OTLP HTTP on port `4318`.
 Enable JSON logs by activating the `json-logging` profile:
 
 ```bash
-mvn spring-boot:run -Dspring-boot.run.profiles=json-logging
+./mvnw spring-boot:run -Dspring-boot.run.profiles=json-logging
 ```
 
 ### Verify baseline endpoints
@@ -357,7 +357,7 @@ Milestones 1-4 baseline are in place:
 - pgvector `KnowledgeStore` uses vector embeddings + cosine similarity for retrieval
 - OpenAPI/Swagger enabled for interactive API exploration
 - request correlation IDs added (`X-Request-Id`) with unified error payloads
-- GitHub Actions CI workflow added (`mvn clean verify`)
+- GitHub Actions CI workflow added (`./mvnw -B clean verify`)
 - optional OTLP tracing/metrics export profile (`otel`) + local collector in `docker-compose.yml`
 - optional JSON logging profile (`json-logging`) via `logback-spring.xml`
 - basic PII guardrails added with redaction + escalation signaling in copilot responses
