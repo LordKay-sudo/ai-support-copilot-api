@@ -1,0 +1,25 @@
+[
+  {
+    "id": "structured-success",
+    "expectHttpStatus": 200,
+    "request": {
+      "ticketId": "TCK-GOLD-1",
+      "question": "Customer cannot reset password after MFA setup",
+      "customerTier": "enterprise",
+      "product": "identity-service",
+      "language": "en"
+    },
+    "answerMustContainAny": ["workflow", "recovery", "support", "identity", "password", "MFA"]
+  },
+  {
+    "id": "validation-empty-fields",
+    "expectHttpStatus": 400,
+    "request": {
+      "ticketId": "",
+      "question": "",
+      "customerTier": "enterprise",
+      "product": "identity-service",
+      "language": "en"
+    }
+  }
+]
