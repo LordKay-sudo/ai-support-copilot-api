@@ -21,6 +21,10 @@ Version 1 delivers a backend API that:
 - Returns typed JSON with confidence and citations
 - Exposes health and metrics endpoints for operations
 
+## Architecture decisions
+
+See [docs/ADR-001-retrieval-security-and-deployment.md](docs/ADR-001-retrieval-security-and-deployment.md) for retrieval modes, JWT security model, and deployment assumptions.
+
 ## Authentication
 
 Business APIs require a **Bearer JWT** (HS256). Set `COPILOT_JWT_SECRET` to a strong value in real environments; the default in `application.properties` is for local development only. The `prod` profile reads the signing key from `COPILOT_JWT_SECRET` and does not fall back to a default.
@@ -35,6 +39,23 @@ JWT claim **`roles`** (string array):
 `GET /api/health`, selected Actuator endpoints, and OpenAPI/Swagger URLs are anonymous. In Swagger UI use **Authorize** and send `Bearer <your-jwt>`.
 
 ## Planned architecture
+
+```mermaid
+flowchart LR
+  Client[Client / Gateway]
+  API[Spring Boot API]
+  Sec[JWT Resource Server]
+  Cop[CopilotService]
+  Ret[KnowledgeRetrievalService]
+  Store[(KnowledgeStore)]
+  LLM[Spring AI Chat]
+  Client --> Sec
+  Sec --> API
+  API --> Cop
+  Cop --> Ret
+  Ret --> Store
+  Cop --> LLM
+```
 
 Core components:
 
