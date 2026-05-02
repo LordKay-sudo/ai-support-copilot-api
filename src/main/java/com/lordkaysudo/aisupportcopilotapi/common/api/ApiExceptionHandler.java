@@ -1,6 +1,7 @@
 package com.lordkaysudo.aisupportcopilotapi.common.api;
 
 import com.lordkaysudo.aisupportcopilotapi.common.web.RequestIdFilter;
+import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.List;
+
 import jakarta.validation.ConstraintViolationException;
 
 @RestControllerAdvice
@@ -43,13 +45,40 @@ public class ApiExceptionHandler {
                 ));
     }
 
-    @ExceptionHandler({ConstraintViolationException.class, MissingServletRequestParameterException.class})
-    public ResponseEntity<ApiErrorResponse> handleRequestValidationExceptions(Exception exception) {
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ApiErrorResponse> handleConstraintViolations(ConstraintViolationException exception) {
+        List<String> errors = exception.getConstraintViolations().stream()
+                .map(v -> v.getPropertyPath() + ": " + v.getMessage())
+                .toList();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ApiErrorResponse(
+                        HttpStatus.BAD_REQUEST.value(),
+                        "Validation failed",
+                        errors,
+                        requestId()
+                ));
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ApiErrorResponse> handleMissingRequestParameter(
+            MissingServletRequestParameterException exception) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ApiErrorResponse(
                         HttpStatus.BAD_REQUEST.value(),
                         "Validation failed",
                         List.of(exception.getMessage()),
+                        requestId()
+                ));
+    }
+
+    @ExceptionHandler(RequestNotPermitted.class)
+    public ResponseEntity<ApiErrorResponse> handleRateLimitExceeded(RequestNotPermitted exception) {
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                .body(new ApiErrorResponse(
+                        HttpStatus.TOO_MANY_REQUESTS.value(),
+                        "Too many requests",
+                        List.of("Rate limit exceeded. Retry after a short backoff."),
                         requestId()
                 ));
     }

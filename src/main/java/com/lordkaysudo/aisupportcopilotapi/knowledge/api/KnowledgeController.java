@@ -3,6 +3,7 @@ package com.lordkaysudo.aisupportcopilotapi.knowledge.api;
 import com.lordkaysudo.aisupportcopilotapi.knowledge.model.KnowledgeIngestRequest;
 import com.lordkaysudo.aisupportcopilotapi.knowledge.model.KnowledgeIngestResponse;
 import com.lordkaysudo.aisupportcopilotapi.knowledge.service.KnowledgeIngestService;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +22,7 @@ public class KnowledgeController {
     }
 
     @PostMapping("/ingest")
+    @RateLimiter(name = "knowledgeIngest")
     public ResponseEntity<KnowledgeIngestResponse> ingest(
             @Valid @RequestBody KnowledgeIngestRequest request) {
         return ResponseEntity.ok(knowledgeIngestService.ingest(request));

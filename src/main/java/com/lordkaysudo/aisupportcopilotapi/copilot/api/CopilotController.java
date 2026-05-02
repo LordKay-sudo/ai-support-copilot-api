@@ -3,6 +3,7 @@ package com.lordkaysudo.aisupportcopilotapi.copilot.api;
 import com.lordkaysudo.aisupportcopilotapi.copilot.model.CopilotAnswerRequest;
 import com.lordkaysudo.aisupportcopilotapi.copilot.model.CopilotAnswerResponse;
 import com.lordkaysudo.aisupportcopilotapi.copilot.service.CopilotService;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +22,7 @@ public class CopilotController {
     }
 
     @PostMapping("/answer")
+    @RateLimiter(name = "copilotAnswer")
     public ResponseEntity<CopilotAnswerResponse> answer(
             @Valid @RequestBody CopilotAnswerRequest request) {
         return ResponseEntity.ok(copilotService.answer(request));
