@@ -28,6 +28,6 @@ public class JwtDecoderConfiguration {
             );
         }
         SecretKey secretKey = new SecretKeySpec(keyBytes, "HmacSHA256");
-        return NimbusJwtDecoder.withSecretKey(secretKey);
+        return NimbusJwtDecoder.withSecretKey(secretKey).build();
     }
 }
