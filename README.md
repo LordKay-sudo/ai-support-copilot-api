@@ -21,6 +21,19 @@ Version 1 delivers a backend API that:
 - Returns typed JSON with confidence and citations
 - Exposes health and metrics endpoints for operations
 
+## Authentication
+
+Business APIs require a **Bearer JWT** (HS256). Set `COPILOT_JWT_SECRET` to a strong value in real environments; the default in `application.properties` is for local development only. The `prod` profile reads the signing key from `COPILOT_JWT_SECRET` and does not fall back to a default.
+
+JWT claim **`roles`** (string array):
+
+| Role | Access |
+|------|--------|
+| `AGENT` | `POST /api/copilot/**`, `GET /api/retrieval/**` |
+| `ADMIN` | `POST /api/knowledge/ingest` plus everything `AGENT` can call |
+
+`GET /api/health`, selected Actuator endpoints, and OpenAPI/Swagger URLs are anonymous. In Swagger UI use **Authorize** and send `Bearer <your-jwt>`.
+
 ## Planned architecture
 
 Core components:
@@ -33,7 +46,7 @@ Core components:
 
 High-level flow:
 
-1. Client calls `POST /api/copilot/answer`
+1. Client obtains a JWT with appropriate `roles`, then calls `POST /api/copilot/answer`
 2. API validates request and enriches runtime context
 3. Retriever fetches top-k relevant documents
 4. Prompt is composed with policy + retrieved context
@@ -138,10 +151,14 @@ Metrics endpoint for platform monitoring.
 
 Debug endpoint to inspect retrieval relevance and scores for tuning.
 
+- `minScore` must be between **0.0** and **1.0** (inclusive). It is the minimum cosine-style similarity used by pgvector retrieval (`1 - distance`); values outside that range are rejected with HTTP 400.
+- The route is registered only when `copilot.retrieval.debug-search-enabled=true`. The default in `application.properties` is **true** for local use; the **`prod`** profile loads `application-prod.properties`, which sets it to **false** so the endpoint is not exposed unless you opt back in.
+
 Example:
 
 ```bash
-curl "http://localhost:8080/api/retrieval/search?query=mfa%20password%20reset&topK=3&minScore=0.3"
+curl -H "Authorization: Bearer YOUR_JWT" \
+  "http://localhost:8080/api/retrieval/search?query=mfa%20password%20reset&topK=3&minScore=0.3"
 ```
 
 ### API docs
