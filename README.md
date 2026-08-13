@@ -2,6 +2,14 @@
 
 AI-powered support copilot API built with Spring Boot and Spring AI, designed for grounded answers through retrieval-augmented generation (RAG), structured response contracts, and production-ready observability.
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Portfolio](https://img.shields.io/badge/portfolio-portfolio.lordkay.com-38bdf8)](https://portfolio.lordkay.com)
+[![Java 21](https://img.shields.io/badge/Java-21-ED8B00?logo=openjdk&logoColor=white)](pom.xml)
+[![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.x-6DB33F?logo=springboot&logoColor=white)](pom.xml)
+[![Spring AI](https://img.shields.io/badge/Spring_AI-RAG-6DB33F?logo=spring&logoColor=white)](pom.xml)
+[![RAG](https://img.shields.io/badge/RAG-grounded_answers-412991)](README.md)
+[![Observability](https://img.shields.io/badge/observability-production--ready-0ea5e9)](README.md)
+
 ## Why this project
 
 Support teams need fast and reliable answers, but generic AI chat often misses product context and creates compliance risk. This project focuses on:
